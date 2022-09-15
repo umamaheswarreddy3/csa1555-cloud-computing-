@@ -1,0 +1,69 @@
+$ sudo nano ~/.bashrc
+export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+export HADOOP_HOME=/usr/local/hadoop/hadoop-2.7.2
+export PATH=$PATH:$HADOOP_HOME/bin
+export PATH=$PATH:$HADOOP_HOME/sbin
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+export HADOOP_OPTS="-D.java.library.path=$HADOOP_HOME/lib"
+export PATH=$PATH:/usr/local/hadoop/hadoop-2.7.2/bin
+$ cd /usr/local/hadoop/hadoop-2.7.2/etc/hadoop/
+$ sudo nano hadoop-env.sh
+# The java implementation to use.
+export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+$ sudo mkdir –p /usr/local/hadoop_tmp/hdfs/namenode
+$ sudo mkdir –p /usr/local/hadoop_tmp/hdfs/datanode
+$ sudo chown –R hduser:hadoop /usr/local/hadoop_tmp
+$ sudo nano hdfs-site.xml
+<configuration>
+<property>
+<name>dfs.replication</name>
+<value>1</value>
+</property>
+<property>
+<name>dfs.namenode.name.dir</name>
+<value>file:/usr/local/hadoop_tmp/hdfs/namenode</value>
+</property>
+<property>
+<name>dfs.datanode.data.dir</name>
+<value>file:/usr/local/hadoop_tmp/hdfs/datanode</value>
+</property>
+</configuration>
+$ sudo nano core-site.xml
+<configuration>
+<property>
+<name>fs.default.name</name>
+<value>hdfs://localhost:9000</value>
+</property>
+</configuration>
+$ sudo nano yarn-site.xml
+<configuration>
+<property>
+<name>yarn.nodemanager.aux-services</name>
+<value>mapreduce_shuffle</value>
+</property>
+<property>
+<name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+<value>org.apache.hadoop.mapred.Shuffle-Handler</value>
+</property>
+</configuration>
+$ cp /usr/local/hadoop/hadoop-2.7.2/etc/hadoop/mapred-site.xml.template
+/usr/local/hadoop/hadoop-2.7.2/etc/hadoop/mapred-site.xml
+$ sudo nano mapred-site.xml
+<configuration>
+<property>
+<name>mapreduce.framework.name</name>
+<value>yarn</value>
+</property>
+</configuration>
+$ cd /usr/local/hadoop/hadoop-2.7.2/bin
+$ hadoop namenode -format
+$ cd /usr/local/hadoop/hadoop-2.7.2/sbin
+$ start-dfs.sh
+$ start-yarn.sh
+$ jps
+$ stop-dfs.sh
+$ stop-yarn.sh
